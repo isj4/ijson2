@@ -1,0 +1,10 @@
+Implement UTF-8 validation (half surrogate pairs, invalid unicode, ...)
+
+Make UTF-8 validation configuration in parsing.
+
+Make UTF-8 validation configuration in formatting?
+
+Use ijson2::memory_arena as allocator for std::vector and std::map.
+Downside is that it changes the types and makes in more cumbersome to work with.
+
+Implement type-checking accessor functions in Value.
