@@ -1,0 +1,7 @@
+*.d
+*.o
+*.a
+test_ijson2
+ijson2_parser_unittest
+ijson2_formatter_unittest
+ijson2_convert_unittest
