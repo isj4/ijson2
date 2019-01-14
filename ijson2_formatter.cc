@@ -3,7 +3,19 @@
 #include <float.h>
 
 
-using namespace ijson2;
+static void format(const ijson2::Value &v, ijson2::append_fn_t append_pfn, void *append_context, int level);
+
+
+static void append_indent(ijson2::append_fn_t append_pfn, void *append_context, int level) {
+	//yes, we use tabs. 
+	while(level>0) {
+		static const char eight_tabs[8]={'\t','\t','\t','\t','\t','\t','\t','\t'};
+		append_pfn(eight_tabs, level%8, append_context);
+		level -= 8;
+	}
+}
+
+
 
 
 static void format_string(const ijson2::string_view sv, ijson2::append_fn_t append_pfn, void *append_context) {
@@ -65,60 +77,82 @@ static void format_int64(int64_t i, ijson2::append_fn_t append_pfn, void *append
 	append_pfn(buf,l,append_context);
 }
 
-static void format_array(const Value::array_type &a, ijson2::append_fn_t append_pfn, void *append_context, bool pretty) {
-	append_pfn("[",1,append_context);
-	bool first=true;
-	for(const auto &e : a) {
-		if(!first)
-			append_pfn(",",1,append_context);
-		format(e,append_pfn,append_context,pretty);
-		first = false;
-	}
-	append_pfn("]",1,append_context);
-}
-
-static void format_object(const Value::map_type &o, ijson2::append_fn_t append_pfn, void *append_context, bool pretty) {
-	append_pfn("{",1,append_context);
-	bool first=true;
-	for(const auto &e : o) {
-		if(!first)
-			append_pfn(",",1,append_context);
-		format_string(e.first,append_pfn,append_context);
-		append_pfn(":",1,append_context);
-		format(e.second,append_pfn,append_context,pretty);
+static void format_array(const ijson2::Value::array_type &a, ijson2::append_fn_t append_pfn, void *append_context, int level) {
+	if(a.empty()) {
+		append_pfn("[]",2,append_context);
+	} else {
+		append_pfn("[",1,append_context);
+		bool first=true;
+		for(const auto &e : a) {
+			if(!first)
+				append_pfn(",",1,append_context);
+			if(level>=0) append_pfn("\n",1,append_context);
+			append_indent(append_pfn,append_context,level>=0?level+1:level);
+			format(e,append_pfn,append_context,level>=0?level+1:level);
 			first = false;
+		}
+		if(level>=0) append_pfn("\n",1,append_context);
+		append_indent(append_pfn,append_context,level);
+		append_pfn("]",1,append_context);
 	}
-	append_pfn("}",1,append_context);
+}
+
+static void format_object(const ijson2::Value::map_type &o, ijson2::append_fn_t append_pfn, void *append_context, int level) {
+	if(o.empty()) {
+		append_pfn("{}",2,append_context);
+	} else {
+		append_pfn("{",1,append_context);
+		bool first=true;
+		for(const auto &e : o) {
+			if(!first)
+				append_pfn(",",1,append_context);
+			if(level>=0) append_pfn("\n",1,append_context);
+			append_indent(append_pfn,append_context,level>=0?level+1:level);
+			format_string(e.first,append_pfn,append_context);
+			append_pfn(":",1,append_context);
+			format(e.second,append_pfn,append_context,level>=0?level+1:level);
+			first = false;
+		}
+		if(level>=0) append_pfn("\n",1,append_context);
+		append_indent(append_pfn,append_context,level);
+		append_pfn("}",1,append_context);
+	}
 }
 
 
-void ijson2::format(const Value &v, ijson2::append_fn_t append_pfn, void *append_context, bool pretty) {
+static void format(const ijson2::Value &v, ijson2::append_fn_t append_pfn, void *append_context, int level) {
 	switch(v.value_type) {
-		case value_type_t::object:
-			format_object(v.u.object_members,append_pfn,append_context,pretty);
+		case ijson2::value_type_t::object:
+			format_object(v.u.object_members,append_pfn,append_context,level);
 			break;
-		case value_type_t::array:
-			format_array(v.u.array_elements,append_pfn,append_context,pretty);
+		case ijson2::value_type_t::array:
+			format_array(v.u.array_elements,append_pfn,append_context,level);
 			break;
-		case value_type_t::string:
+		case ijson2::value_type_t::string:
 			format_string(v.u.string_value,append_pfn,append_context);
 			break;
-		case value_type_t::boolean:
+		case ijson2::value_type_t::boolean:
 			if(v.u.bool_value)
 				append_pfn("true",4,append_context);
 			else
 				append_pfn("false",5,append_context);
 			break;
-		case value_type_t::number_double:
+		case ijson2::value_type_t::number_double:
 			format_double(v.u.number_doublevalue,append_pfn,append_context);
 			break;
-		case value_type_t::number_int64:
+		case ijson2::value_type_t::number_int64:
 			format_int64(v.u.number_int64value,append_pfn,append_context);
 			break;
-		case value_type_t::null:
+		case ijson2::value_type_t::null:
 			append_pfn("null",4,append_context);
 			break;
 	}
+}
+
+
+void ijson2::format(const Value &v, ijson2::append_fn_t append_pfn, void *append_context, bool pretty) {
+	::format(v,append_pfn,append_context, pretty?0:-1);
+	if(pretty) append_pfn("\n",1,append_context);
 }
 
 

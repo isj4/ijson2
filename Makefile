@@ -58,6 +58,7 @@ clean:
 	rm -f test_ijson2
 	rm -f ijson2_parser_unittest ijson2_formatter_unittest ijson2_convert_unittest
 	rm -f parser_performance_test
+	rm -f test_pretty_formatting
 
 
 OBJS = \
@@ -79,6 +80,9 @@ test_ijson2: test_ijson2.o libijson2.a
 parser_performance_test: parser_performance_test.o libijson2.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ parser_performance_test.o libijson2.a
 
+
+test_pretty_formatting: test_pretty_formatting.o libijson2.a
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ test_pretty_formatting.o libijson2.a
 
 UNITTESTS += ijson2_parser_unittest
 ijson2_parser_unittest: ijson2_parser_unittest.o libijson2.a
@@ -117,5 +121,7 @@ DEPS := $(OBJS:.o=.d)
 DEPS += ijson2_parser_unittest.d
 DEPS += ijson2_formatter_unittest.d
 DEPS += ijson2_convert_unittest.d
+DEPS += parser_performance_test.d
+DEPS += test_pretty_formatting.d
 
 -include $(DEPS)
