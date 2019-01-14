@@ -71,8 +71,8 @@ Example use:
 
 # Compiling and linking
 Just use `make` and you will get libijson2.a
-The library works with gcc-7, gcc-8 and clang-5.
+The library has been tested with gcc-7, gcc-8 and clang-5.
 
 
-# Final thoughts
-This is not a work of love. It is a work of necessity. None of the C++ libraries I could find at the time had a liberal license or any exception guarantee.
+# Reason for making this library
+None of the C++ libraries I could find at the time had a liberal license or any exception guarantee.

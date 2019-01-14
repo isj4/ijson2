@@ -57,6 +57,7 @@ clean:
 	rm -f *.d
 	rm -f test_ijson2
 	rm -f ijson2_parser_unittest ijson2_formatter_unittest ijson2_convert_unittest
+	rm -f parser_performance_test
 
 
 OBJS = \
@@ -73,6 +74,10 @@ libijson2.a: $(OBJS)
 #Test driver program for JSONTestSuite
 test_ijson2: test_ijson2.o libijson2.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ test_ijson2.o libijson2.a
+
+#test program for measuring parser performance
+parser_performance_test: parser_performance_test.o libijson2.a
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ parser_performance_test.o libijson2.a
 
 
 UNITTESTS += ijson2_parser_unittest
