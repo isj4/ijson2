@@ -1,6 +1,7 @@
 #ifndef IJSON2_FORMATTER_HH_
 #define IJSON2_FORMATTER_HH_
 #include "ijson2.hh"
+#include <stdexcept>
 
 namespace ijson2 {
 

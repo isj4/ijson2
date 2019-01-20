@@ -1,6 +1,6 @@
 # C++11 JSON library
-This is a C++ library for handling JSON. It uses C++ constructs. It has a liberal license.
-It is reasonably efficient. The library provides a "Basic exception safety" meaning no leaks.
+This is a C++ library for handling JSON. It uses C++11 constructs. It has a liberal license.
+It is reasonably efficient. The library provides a "Basic exception safety" meaning no memory leaks.
 
 It is RFC 8259 compliant as far as I know. It passes all the mandatory tests on JSONTestSuite (https://github.com/nst/JSONTestSuite).
 
@@ -10,17 +10,27 @@ The library uses the most straight-forward representation of values as long as t
 All values are in a `Value` container which contains a union `u`. Which part of the union is valid is determined by Value::value_type.
 
 ## Numbers
-JSON numbers are stored either as an `int64_t` or as a `double`.
+JSON numbers are stored either as an `int64_t` in Value::u::number_int64value or as a `double` in Value::u::number_doublevalue
 ## Strings
-Strings are stored as `isjon2::string_view` which some day (years..) will be replaced with C++17 `std::string_view`.
+Strings are stored as `isjon2::string_view` in Value::u::string_value which some day (years..) will be replaced with C++17 `std::string_view`.
+Note such values retain a direct reference to the value so if the string you want to use is a temporary or 'rvalue' then you have to allocate it somewhere. You can use ijson2::memory_arena for that if you like.
+Don't do this:
+```
+    std::string s;
+    ...
+    ijson2::Value v;
+    v = (s+"foo").c_str();
+    return v;
+```
+The advantage of retaining a direct reference outweighs the disadavtange above. It means that the library doesn't have to use precious heap memory for constant strings.
 ## Booleans (true/false)
-Stored as `bool`.
+Stored as `bool` in Value::u::bool_value.
 ## Null
-Stored as ... well a value signifying null
+Stored as ... well a value signifying null.
 ## Arrays
-Stored as `std::vector<Value>`.
+Stored as `std::vector<Value>` in Value::u::array_elements.
 ## Objects
-Stored as `std::map<string_view,Value>`.
+Stored as `std::map<string_view,Value>` in Value::u::object_members.
 
 
 
@@ -37,6 +47,7 @@ Example use:
 	    if(parser.value().value_type!=ijson2::value_type_t::object)
 	        throw ...
         if(parser.value().u.object_memebrs.at("foo") ...
+	//use result
     } catch(const ijson2::parser_error &ex) {
         cerr << "Could not parse JSON:" << ex.what() << " at " << ex.where() << "\n";
     } catch(const std::bad_alloc &) {
@@ -70,7 +81,7 @@ Example use:
 
 
 # Compiling and linking
-Just use `make` and you will get libijson2.a
+Just use `make` or `make config=release` and you will get libijson2.a
 The library has been tested with gcc-7, gcc-8 and clang-5.
 
 

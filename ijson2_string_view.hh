@@ -29,11 +29,11 @@ public:
 	    count{0}
 	{}
 	constexpr string_view(const string_view&) noexcept = default;
-	constexpr string_view(const char *s_, size_t count_)
+	constexpr string_view(const char *s_, size_t count_) noexcept
 	  : s{s_},
 	    count{count_}
 	{}
-	string_view(const char *s_);
+	string_view(const char *s_) noexcept;
 	
 	string_view& operator=(const string_view&) noexcept = default;
 	
@@ -44,13 +44,13 @@ public:
 		return s+count;
 	}
 	
-	constexpr const_reference operator[](size_type pos) const {
+	constexpr const_reference operator[](size_type pos) const noexcept {
 		return s[pos];
 	}
-	constexpr const_reference front() const {
+	constexpr const_reference front() const noexcept {
 		return s[0];
 	}
-	constexpr const_reference back() const {
+	constexpr const_reference back() const noexcept {
 		return s[count-1];
 	}
 	constexpr const_pointer data() const noexcept {
@@ -95,22 +95,22 @@ public:
 	
 	int compare(string_view v) const noexcept;
 
-	bool operator==(const ijson2::string_view rhs) const {
+	bool operator==(const ijson2::string_view rhs) const noexcept {
 		return compare(rhs)==0;
 	}
-	bool operator!=(const ijson2::string_view rhs) const {
+	bool operator!=(const ijson2::string_view rhs) const noexcept {
 		return compare(rhs)!=0;
 	}
-	bool operator<(const ijson2::string_view rhs) const {
+	bool operator<(const ijson2::string_view rhs) const noexcept {
 		return compare(rhs)<0;
 	}
-	bool operator<=(const ijson2::string_view rhs) const {
+	bool operator<=(const ijson2::string_view rhs) const noexcept {
 		return compare(rhs)<=0;
 	}
-	bool operator>(const ijson2::string_view rhs) const {
+	bool operator>(const ijson2::string_view rhs) const noexcept {
 		return compare(rhs)>0;
 	}
-	bool operator>=(const ijson2::string_view rhs) const {
+	bool operator>=(const ijson2::string_view rhs) const noexcept {
 		return compare(rhs)>=0;
 	}
 

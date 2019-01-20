@@ -34,19 +34,19 @@ int main() {
 	
 	printf("formatting int64\n");
 	{
-		ijson2::Value v{(int64_t)0};
+		ijson2::Value v{0};
 		s.clear();
 		ijson2::format(v, append,&s);
 		assert(s=="0");
 	}
 	{
-		ijson2::Value v{(int64_t)42};
+		ijson2::Value v{42};
 		s.clear();
 		ijson2::format(v, append,&s);
 		assert(s=="42");
 	}
 	{
-		ijson2::Value v{(int64_t)-42};
+		ijson2::Value v{-42};
 		s.clear();
 		ijson2::format(v, append,&s);
 		assert(s=="-42");
@@ -81,8 +81,8 @@ int main() {
 	}
 	{
 		ijson2::Value v{ijson2::Value::array_type{}};
-		v.u.array_elements.push_back(ijson2::string_view("abc"));
-		v.u.array_elements.push_back((int64_t)17);
+		v.u.array_elements.push_back("abc");
+		v.u.array_elements.push_back(17);
 		s.clear();
 		ijson2::format(v, append,&s);
 		assert(s=="[\"abc\",17]");
@@ -97,8 +97,8 @@ int main() {
 	}
 	{
 		ijson2::Value v{ijson2::Value::map_type{}};
-		v.u.object_members["foo"] = ijson2::string_view("abc");
-		v.u.object_members["boo"] = (int64_t)17;
+		v.u.object_members["foo"] = "abc";
+		v.u.object_members["boo"] = 17;
 		s.clear();
 		ijson2::format(v, append,&s);
 		assert(s=="{\"foo\":\"abc\",\"boo\":17}" || s=="{\"boo\":17,\"foo\":\"abc\"}");

@@ -1,7 +1,7 @@
 #include "ijson2_string_view.hh"
 #include <string.h>
 
-ijson2::string_view::string_view(const char *s_)
+ijson2::string_view::string_view(const char *s_) noexcept
   : s{s_},
     count{strlen(s_)}
 {}

@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <map>
 #include <vector>
+#include <stdexcept>
 
 
 namespace ijson2 {
@@ -17,9 +18,25 @@ enum class value_type_t {
 	number_int64,
 	null,
 };
+static const char *value_type_name[] = {
+	"object",
+	"array",
+	"string",
+	"boolean",
+	"number_double",
+	"number_int64",
+	"null"
+};
+
+class unexpected_value_type : std::runtime_error {
+public:
+	unexpected_value_type(value_type_t expected, value_type_t actual)
+	  : std::runtime_error(std::string("Unexpected value type '")+value_type_name[static_cast<int>(actual)]+"', expected '"+value_type_name[static_cast<int>(expected)]+"'")
+	{}
+};
 
 class Value {
-	void clear() {
+	void clear() noexcept {
 		switch(value_type) {
 			case value_type_t::object:
 				u.object_members.~map_type();
@@ -41,6 +58,7 @@ class Value {
 public:
 	using map_type = std::map<string_view,Value>;
 	using array_type = std::vector<Value>;
+	
 	Value() noexcept
 	  : value_type(value_type_t::null)
 	{}
@@ -49,29 +67,29 @@ public:
 	{
 		*this = v;
 	}
-	~Value() {
+	~Value() noexcept {
 		clear();
 	}
 	
-	Value(std::nullptr_t)
+	Value(std::nullptr_t) noexcept
 	  : value_type(value_type_t::null)
 	{}
-	Value(string_view sv)
+	Value(string_view sv) noexcept
 	  : value_type(value_type_t::string)
 	{
 		u.string_value = sv;
 	}
-	explicit Value(bool b)
+	explicit Value(bool b) noexcept
 	  : value_type(value_type_t::boolean)
 	{
 		u.bool_value = b;
 	}
-	Value(int64_t i)
+	Value(int64_t i) noexcept
 	  : value_type(value_type_t::number_int64)
 	{
 		u.number_int64value = i;
 	}
-	Value(double d)
+	Value(double d) noexcept
 	  : value_type(value_type_t::number_double)
 	{
 		u.number_doublevalue = d;
@@ -84,6 +102,16 @@ public:
 		new(&u.object_members) map_type(o);
 		value_type = value_type_t::object;
 	}
+	
+	//delegating constructors ad nauseam
+	Value(int8_t i) noexcept : Value((int64_t)i) {}
+	Value(uint8_t i) noexcept : Value((int64_t)i) {}
+	Value(int16_t i) noexcept : Value((int64_t)i) {}
+	Value(uint16_t i) noexcept : Value((int64_t)i) {}
+	Value(int32_t i) noexcept : Value((int64_t)i) {}
+	Value(uint32_t i) noexcept : Value((int64_t)i) {}
+	Value(float d) noexcept : Value((double)d) {}
+	Value(const char *s) noexcept : Value(string_view(s)) {}
 	
 	Value& operator=(const Value &v) {
 		if(this!=&v) {
@@ -108,31 +136,36 @@ public:
 		return *this;
 	}
 	
-	Value& operator=(std::nullptr_t) {
+	Value& operator=(std::nullptr_t) noexcept {
 		clear();
 		value_type = value_type_t::null;
 		return *this;
 	}
-	Value& operator=(string_view sv)
-	{
+	Value& operator=(string_view sv) noexcept {
 		clear();
 		u.string_value = sv;
 		value_type = value_type_t::string;
 		return *this;
 	}
-	Value& operator=(bool b) {
+	Value& operator=(bool b) noexcept {
 		clear();
 		u.bool_value = b;
 		value_type = value_type_t::boolean;
 		return *this;
 	}
-	Value& operator=(int64_t i) {
+	Value& operator=(int64_t i) noexcept {
 		clear();
 		u.number_int64value = i;
 		value_type = value_type_t::number_int64;
 		return *this;
 	}
-	Value& operator=(double d) {
+	Value& operator=(int8_t i) noexcept { return *this = (int64_t)i; }
+	Value& operator=(uint8_t i) noexcept { return *this = (int64_t)i; }
+	Value& operator=(int16_t i) noexcept { return *this = (int64_t)i; }
+	Value& operator=(uint16_t i) noexcept { return *this = (int64_t)i; }
+	Value& operator=(int32_t i) noexcept { return *this = (int64_t)i; }
+	Value& operator=(uint32_t i) noexcept { return *this = (int64_t)i; }
+	Value& operator=(double d) noexcept {
 		clear();
 		u.number_doublevalue = d;
 		value_type = value_type_t::number_double;
@@ -150,11 +183,14 @@ public:
 		value_type = value_type_t::object;
 		return *this;
 	}
+	Value& operator=(const char *s) noexcept {
+		return *this = string_view(s);
+	}
 	
 	value_type_t value_type;
 	union U {
-		U() {}
-		~U() {}
+		U() noexcept {}
+		~U() noexcept {}
 		std::map<string_view,Value> object_members;
 		std::vector<Value> array_elements;
 		string_view string_value;
@@ -162,6 +198,38 @@ public:
 		double number_doublevalue;
 		int64_t number_int64value;
 	} u;
+	
+	const map_type &object() const {
+		if(value_type!=value_type_t::object)
+			throw unexpected_value_type(value_type_t::object, value_type);
+		return u.object_members;
+	}
+	const array_type &array() const {
+		if(value_type!=value_type_t::array)
+			throw unexpected_value_type(value_type_t::array, value_type);
+		return u.array_elements;
+	}
+	string_view string() const {
+		if(value_type!=value_type_t::string)
+			throw unexpected_value_type(value_type_t::string, value_type);
+		return u.string_value;
+	}
+	bool boolean() const {
+		if(value_type!=value_type_t::boolean)
+			throw unexpected_value_type(value_type_t::boolean, value_type);
+		return u.bool_value;
+	}
+	double doublevalue() const {
+		if(value_type!=value_type_t::number_double)
+			throw unexpected_value_type(value_type_t::number_double, value_type);
+		return u.number_doublevalue;
+	}
+	int64_t int64value() const {
+		if(value_type!=value_type_t::number_int64)
+			throw unexpected_value_type(value_type_t::number_int64, value_type);
+		return u.number_int64value;
+	}
+	bool is_null() const { return value_type==value_type_t::null; }
 };
 
 } //namespace

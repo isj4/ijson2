@@ -2,6 +2,7 @@
 #define IJSON2_PARSER_HH_
 #include "ijson2.hh"
 #include "ijson2_memory_arena.hh"
+#include <stdexcept>
 
 namespace ijson2 {
 
