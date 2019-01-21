@@ -28,7 +28,7 @@ static const char *value_type_name[] = {
 	"null"
 };
 
-class unexpected_value_type : std::runtime_error {
+class unexpected_value_type : public std::runtime_error {
 public:
 	unexpected_value_type(value_type_t expected, value_type_t actual)
 	  : std::runtime_error(std::string("Unexpected value type '")+value_type_name[static_cast<int>(actual)]+"', expected '"+value_type_name[static_cast<int>(expected)]+"'")
