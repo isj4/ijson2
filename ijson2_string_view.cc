@@ -19,3 +19,11 @@ int ijson2::string_view::compare(ijson2::string_view v) const noexcept {
 	else
 		return 0;
 }
+
+bool ijson2::string_view::operator==(const char *str) const noexcept {
+	size_t l = strlen(str);
+	if(l==count)
+		return memcmp(s,str,l)==0;
+	else
+		return false;
+}

@@ -113,7 +113,8 @@ public:
 	bool operator>=(const ijson2::string_view rhs) const noexcept {
 		return compare(rhs)>=0;
 	}
-
+	
+	bool operator==(const char *str) const noexcept;
 };
 
 } //namespace
