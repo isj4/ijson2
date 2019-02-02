@@ -67,6 +67,11 @@ public:
 	{
 		*this = v;
 	}
+	Value(Value &&v)
+	  : value_type(value_type_t::null)
+	{
+		*this = std::move(v);
+	}
 	~Value() noexcept {
 		clear();
 	}
@@ -120,6 +125,34 @@ public:
 					return (*this) = v.u.object_members;
 				case value_type_t::array:
 					return (*this) = v.u.array_elements;
+				case value_type_t::string:
+					return (*this) = v.u.string_value;
+				case value_type_t::boolean:
+					return (*this) = v.u.bool_value;
+				case value_type_t::number_double:
+					return (*this) = v.u.number_doublevalue;
+				case value_type_t::number_int64:
+					return (*this) = v.u.number_int64value;
+				case value_type_t::null:
+					value_type = value_type_t::null;
+					break;
+			}
+		}
+		return *this;
+	}
+	Value& operator=(Value &&v) {
+		if(this!=&v) {
+			switch(v.value_type) {
+				case value_type_t::object:
+					clear();
+					new (&u.object_members) map_type(std::move(v.u.object_members));
+					value_type = value_type_t::object;
+					return *this;
+				case value_type_t::array:
+					clear();
+					new (&u.array_elements) array_type(std::move(v.u.array_elements));
+					value_type = value_type_t::array;
+					return *this;
 				case value_type_t::string:
 					return (*this) = v.u.string_value;
 				case value_type_t::boolean:
@@ -204,7 +237,17 @@ public:
 			throw unexpected_value_type(value_type_t::object, value_type);
 		return u.object_members;
 	}
+	map_type &object() {
+		if(value_type!=value_type_t::object)
+			throw unexpected_value_type(value_type_t::object, value_type);
+		return u.object_members;
+	}
 	const array_type &array() const {
+		if(value_type!=value_type_t::array)
+			throw unexpected_value_type(value_type_t::array, value_type);
+		return u.array_elements;
+	}
+	array_type &array() {
 		if(value_type!=value_type_t::array)
 			throw unexpected_value_type(value_type_t::array, value_type);
 		return u.array_elements;

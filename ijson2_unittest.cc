@@ -110,6 +110,47 @@ int main(void) {
 	}
 	
 	//not done: booring assignment-operators
+
+	printf("move-ctor\n");
+	{
+		Value v0(Value::map_type{});
+		v0.object().emplace("foo",17);
+		assert(v0.object().size()==1);
+		assert(v0.object().at("foo").int64value()==17);
+		Value v1(std::move(v0));
+		assert(v1.object().size()==1);
+		assert(v0.object().size()==0);
+	}
+	{
+		Value v0(Value::array_type{});
+		v0.array().emplace_back("foo");
+		v0.array().emplace_back(17);
+		assert(v0.array().size()==2);
+		Value v1(std::move(v0));
+		assert(v1.array().size()==2);
+		assert(v0.array().size()==0);
+	}
 	
+	printf("move-assignment\n");
+	{
+		Value v0(Value::map_type{});
+		v0.object().emplace("foo",17);
+		assert(v0.object().size()==1);
+		assert(v0.object().at("foo").int64value()==17);
+		Value v1;
+		v1 = std::move(v0);
+		assert(v1.object().size()==1);
+		assert(v0.object().size()==0);
+	}
+	{
+		Value v0(Value::array_type{});
+		v0.array().emplace_back("foo");
+		v0.array().emplace_back(17);
+		assert(v0.array().size()==2);
+		Value v1;
+		v1 = std::move(v0);
+		assert(v1.array().size()==2);
+		assert(v0.array().size()==0);
+	}
 	return 0;
 }
