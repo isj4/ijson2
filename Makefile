@@ -80,6 +80,10 @@ test_ijson2: test_ijson2.o libijson2.a
 parser_performance_test: parser_performance_test.o libijson2.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ parser_performance_test.o libijson2.a
 
+#test program for measuring formatter performance
+formatter_performance_test: formatter_performance_test.o libijson2.a
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ formatter_performance_test.o libijson2.a
+
 
 test_pretty_formatting: test_pretty_formatting.o libijson2.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ test_pretty_formatting.o libijson2.a
