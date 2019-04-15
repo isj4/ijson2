@@ -51,6 +51,18 @@ int main() {
 		ijson2::format(v, append,&s);
 		assert(s=="-42");
 	}
+	{
+		ijson2::Value v{123456};
+		s.clear();
+		ijson2::format(v, append,&s);
+		assert(s=="123456");
+	}
+	{
+		ijson2::Value v{-123456};
+		s.clear();
+		ijson2::format(v, append,&s);
+		assert(s=="-123456");
+	}
 	
 	printf("formatting double\n");
 	{
