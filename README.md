@@ -22,7 +22,7 @@ Don't do this:
     v = (s+"foo").c_str();
     return v;
 ```
-The advantage of retaining a direct reference outweighs the disadavtange above. It means that the library doesn't have to use precious heap memory for constant strings.
+The advantage of retaining a direct reference outweighs the disadvantage above. It means that the library doesn't have to use precious heap memory for constant strings.
 ## Booleans (true/false)
 Stored as `bool` in Value::u::bool_value.
 ## Null
@@ -35,7 +35,7 @@ Stored as `std::map<string_view,Value>` in Value::u::object_members.
 
 
 # Parser
-It parses JSON input in ASCII or UTF-8. It ignores any UTF-8 BOM. It decodes any escaped characters including \n, \uXXX etc. it passes other characters straight trhough, so eg. half a unicode surrogate pair will slip through. It accepts non-objects at the top level (eg. a string or array).
+It parses JSON input in ASCII or UTF-8. It ignores any UTF-8 BOM. It decodes any escaped characters including \n, \uXXX etc. it passes other characters straight through, so eg. half a unicode surrogate pair will slip through. It accepts non-objects at the top level (eg. a string or array).
 It parses all or nothing.
 
 Example use:
@@ -86,4 +86,4 @@ The library has been tested with gcc-7, gcc-8 and clang-5.
 
 
 # Reason for making this library
-None of the C++ libraries I could find at the time had a liberal license or any exception guarantee.
+None of the C++ libraries I could find at the time had a liberal license or any visible exception guarantee.
