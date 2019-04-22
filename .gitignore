@@ -8,3 +8,7 @@ ijson2_formatter_unittest
 ijson2_convert_unittest
 parser_performance_test
 test_pretty_formatting
+direct_formatter_performance_test
+formatter_performance_test
+ijson2_direct_formatter_unittest
+test_pretty_direct_formatting

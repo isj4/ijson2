@@ -79,6 +79,8 @@ Example use:
     ijson2::format(v, append,&s);
 ```
 
+# Direct formatter
+If you need to produce a large JSON output and heap memory is a concern then there is an alternative formatter 'DirectFormatter' which instead of nice ijson2::Value items take raw values and strings and leaves much of the reposibility of producing a correct JSON output to the programmer.
 
 # Compiling and linking
 Just use `make` or `make config=release` and you will get libijson2.a

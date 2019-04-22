@@ -84,6 +84,20 @@ int main() {
 		assert(s=="-42.5");
 	}
 	
+	printf("formatting strings\n");
+	{
+		ijson2::Value v{"foo"};
+		s.clear();
+		ijson2::format(v, append,&s);
+		assert(s=="\"foo\"");
+	}
+	{
+		ijson2::Value v{"fo\no"};
+		s.clear();
+		ijson2::format(v, append,&s);
+		assert(s=="\"fo\\no\"");
+	}
+	
 	printf("formatting arrays\n");
 	{
 		ijson2::Value v{ijson2::Value::array_type{}};

@@ -57,6 +57,7 @@ clean:
 	rm -f *.d
 	rm -f test_ijson2
 	rm -f ijson2_unittest ijson2_parser_unittest ijson2_formatter_unittest ijson2_convert_unittest
+	rm -f ijson2_direct_formatter_unittest
 	rm -f parser_performance_test
 	rm -f test_pretty_formatting
 
@@ -66,6 +67,7 @@ OBJS = \
 	ijson2_memory_arena.o \
 	ijson2_parser.o \
 	ijson2_formatter.o \
+	ijson2_direct_formatter.o \
 
 
 libijson2.a: $(OBJS)
@@ -84,9 +86,15 @@ parser_performance_test: parser_performance_test.o libijson2.a
 formatter_performance_test: formatter_performance_test.o libijson2.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ formatter_performance_test.o libijson2.a
 
+direct_formatter_performance_test: direct_formatter_performance_test.o libijson2.a
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ direct_formatter_performance_test.o libijson2.a
+
 
 test_pretty_formatting: test_pretty_formatting.o libijson2.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ test_pretty_formatting.o libijson2.a
+
+test_pretty_direct_formatting: test_pretty_direct_formatting.o libijson2.a
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ test_pretty_direct_formatting.o libijson2.a
 
 UNITTESTS += ijson2_unittest
 ijson2_unittest: ijson2_unittest.o libijson2.a
@@ -110,6 +118,14 @@ ijson2_formatter_unittest: ijson2_formatter_unittest.o libijson2.a
 .PHONY: ijson2_formatter_unittest_run
 ijson2_formatter_unittest_run: ijson2_formatter_unittest
 	valgrind --error-exitcode=1 ./ijson2_formatter_unittest
+
+
+UNITTESTS += ijson2_formatter_unittest
+ijson2_direct_formatter_unittest: ijson2_direct_formatter_unittest.o libijson2.a
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ ijson2_direct_formatter_unittest.o libijson2.a
+.PHONY: ijson2_direct_formatter_unittest_run
+ijson2_direct_formatter_unittest_run: ijson2_direct_formatter_unittest
+	valgrind --error-exitcode=1 ./ijson2_direct_formatter_unittest
 
 
 UNITTESTS += ijson2_convert_unittest
