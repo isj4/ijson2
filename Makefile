@@ -60,7 +60,9 @@ clean:
 	rm -f ijson2_direct_formatter_unittest
 	rm -f parser_performance_test
 	rm -f test_pretty_formatting
-
+	rm -f direct_formatter_performance_test
+	rm -f formatter_performance_test
+	rm -f test_pretty_direct_formatting
 
 OBJS = \
 	ijson2_string_view.o \
