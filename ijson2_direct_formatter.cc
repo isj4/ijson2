@@ -1,5 +1,7 @@
 #include "ijson2_direct_formatter.hh"
+#include "double-conversion/double-conversion/double-conversion.h"
 #include <string.h>
+#include <math.h>
 
 
 void ijson2::DirectFormatter::append(const char *s, size_t l) {
@@ -32,6 +34,7 @@ void ijson2::DirectFormatter::append_indent(int level) {
 
 void ijson2::DirectFormatter::open_object() {
 	if(pretty) {
+		if(nl_indent_pending) append("\n",1);
 		if(!suppress_indent) append_indent(level);
 		level++;
 		append("{",1);
@@ -167,19 +170,49 @@ void ijson2::DirectFormatter::append_number(int64_t i) {
 
 
 void ijson2::DirectFormatter::append_number(double d) {
+	//in many scenarios doubles are actually whole numbers
+	int64_t i = static_cast<int64_t>(d);
+	if(d == i) {
+		append_number(i);
+		return;
+	}
+	
 	if(pretty) {
 		if(nl_indent_pending) append("\n",1);
 		nl_indent_pending=false;
 		if(!suppress_indent) append_indent(level);
 	}
-	//todo: use an optimized algorithm, eg Grisu
-	char buf[64];
-	size_t l = sprintf(buf,"%.18f", d);
-	if(memchr(buf,'e',l)==nullptr) {
-		while(l>=2 && buf[l-1]=='0' && buf[l-2]!='.')
-			l--;
+	switch(fpclassify(d)) {
+		case FP_NAN:
+		case FP_INFINITE: {
+			char buf[64];
+			size_t l = sprintf(buf,"%.18f", d);
+			if(memchr(buf,'e',l)==nullptr) {
+				while(l>=2 && buf[l-1]=='0' && buf[l-2]!='.')
+					l--;
+			}
+			append(buf,l);
+			break;
+		}
+		case FP_ZERO:
+		case FP_SUBNORMAL:
+			append("0",1);
+			break;
+		default: {
+			using namespace double_conversion;
+			DoubleToStringConverter dtsc(DoubleToStringConverter::NO_FLAGS,
+			                             "INF",
+						     "NAN",
+						     'e',
+						     -16, 16,
+						     16,16);
+			char buf[64];
+			StringBuilder sb(buf,sizeof(buf));
+			dtsc.ToShortest(d,&sb);
+			append(buf,sb.position());
+			break;
+		}
 	}
-	append(buf,l);
 }
 
 

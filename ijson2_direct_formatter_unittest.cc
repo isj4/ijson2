@@ -95,6 +95,13 @@ int main() {
 		df.flush();
 		assert(s=="-42.5");
 	}
+	{
+		DirectFormatter df(append,&s);
+		s.clear();
+		df.append_number(0.0042500000001);
+		df.flush();
+		assert(s=="0.0042500000001");
+	}
 	
 	printf("formatting strings\n");
 	{

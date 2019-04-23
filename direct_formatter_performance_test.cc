@@ -27,7 +27,7 @@ int main(void) {
 			df.append_array_member_separator();
 			df.append_string("boo");
 			df.append_array_member_separator();
-			df.append_number(17.42);
+			df.append_number(17.0);
 			df.append_array_member_separator();
 			df.append_number(117);
 			df.append_array_member_separator();

@@ -72,8 +72,14 @@ OBJS = \
 	ijson2_direct_formatter.o \
 
 
-libijson2.a: $(OBJS)
+libijson2.a: $(OBJS) double-conversion/libdouble-conversion.a
 	ar rcs $@ $(OBJS)
+	@rm -rf dtmp
+	mkdir dtmp && (cd dtmp; ar x ../double-conversion/libdouble-conversion.a; ar r ../$@ *.o)
+	@rm -rf dtmp
+
+double-conversion/libdouble-conversion.a:
+	(cd double-conversion && cmake . && make)
 
 
 #Test driver program for JSONTestSuite

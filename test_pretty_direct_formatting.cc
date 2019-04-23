@@ -4,7 +4,7 @@
 
 
 int main(void) {
-	//parser.parse("{\"foo\":17,\"boo\":[null,42,117,{},1234],\"goo\":{\"zoo\":9876,\"xoo\":[]}}");
+	//parser.parse("{\"foo\":17,\"boo\":[{},null,42,117,{},1234],\"goo\":{\"zoo\":9876,\"xoo\":[]}}");
 	
 	std::string s;
 	auto append = [](const char *src, size_t srcsize, void *append_context) {
@@ -22,6 +22,9 @@ int main(void) {
 	df.begin_object_member("boo");
 	
 	df.open_array();
+	df.open_object();
+	df.close_object();
+	df.append_array_member_separator();
 	df.append_null();
 	df.append_array_member_separator();
 	df.append_number(42);

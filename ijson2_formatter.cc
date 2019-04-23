@@ -1,6 +1,8 @@
 #include "ijson2_formatter.hh"
+#include "double-conversion/double-conversion/double-conversion.h"
 #include <string.h>
 #include <float.h>
+#include <math.h>
 
 
 namespace {
@@ -103,18 +105,6 @@ static void format_string(const ijson2::string_view sv, Context &context) {
 }
 
 
-static void format_double(double d, Context &context) {
-	//todo: use an optimized algorithm, eg Grisu
-	char buf[64];
-	size_t l = sprintf(buf,"%.18f", d);
-	if(memchr(buf,'e',l)==nullptr) {
-		while(l>=2 && buf[l-1]=='0' && buf[l-2]!='.')
-			l--;
-	}
-	context.append(buf,l);
-}
-
-
 static void format_int64(int64_t i, Context &context) {
 #if 0
 	//the obvious way
@@ -147,6 +137,48 @@ static void format_int64(int64_t i, Context &context) {
 	}
 #endif
 }
+
+
+static void format_double(double d, Context &context) {
+	int64_t i = static_cast<int64_t>(d);
+	if(d == i) {
+		format_int64(i,context);
+		return;
+	}
+	
+	switch(fpclassify(d)) {
+		case FP_NAN:
+		case FP_INFINITE: {
+			char buf[64];
+			size_t l = sprintf(buf,"%.18f", d);
+			if(memchr(buf,'e',l)==nullptr) {
+				while(l>=2 && buf[l-1]=='0' && buf[l-2]!='.')
+					l--;
+			}
+			context.append(buf,l);
+			break;
+		}
+		case FP_ZERO:
+		case FP_SUBNORMAL:
+			context.append("0",1);
+			break;
+		default: {
+			using namespace double_conversion;
+			DoubleToStringConverter dtsc(DoubleToStringConverter::NO_FLAGS,
+			                             "INF",
+						     "NAN",
+						     'e',
+						     -16, 16,
+						     16,16);
+			char buf[64];
+			StringBuilder sb(buf,sizeof(buf));
+			dtsc.ToShortest(d,&sb);
+			context.append(buf,sb.position());
+			break;
+		}
+	}
+}
+
 
 static void format_array(const ijson2::Value::array_type &a, Context &context, int level) {
 	if(a.empty()) {
