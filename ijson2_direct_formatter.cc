@@ -47,6 +47,7 @@ void ijson2::DirectFormatter::open_object() {
 
 void ijson2::DirectFormatter::open_array() {
 	if(pretty) {
+		if(nl_indent_pending) append("\n",1);
 		if(!suppress_indent) append_indent(level);
 		level++;
 		append("[",1);
