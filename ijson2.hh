@@ -110,13 +110,13 @@ public:
 	}
 	
 	//delegating constructors ad nauseam
-	Value(int8_t i) noexcept : Value((int64_t)i) {}
-	Value(uint8_t i) noexcept : Value((int64_t)i) {}
-	Value(int16_t i) noexcept : Value((int64_t)i) {}
-	Value(uint16_t i) noexcept : Value((int64_t)i) {}
-	Value(int32_t i) noexcept : Value((int64_t)i) {}
-	Value(uint32_t i) noexcept : Value((int64_t)i) {}
-	Value(float d) noexcept : Value((double)d) {}
+	Value(int8_t i) noexcept : Value(static_cast<int64_t>(i)) {}
+	Value(uint8_t i) noexcept : Value(static_cast<int64_t>(i)) {}
+	Value(int16_t i) noexcept : Value(static_cast<int64_t>(i)) {}
+	Value(uint16_t i) noexcept : Value(static_cast<int64_t>(i)) {}
+	Value(int32_t i) noexcept : Value(static_cast<int64_t>(i)) {}
+	Value(uint32_t i) noexcept : Value(static_cast<int64_t>(i)) {}
+	Value(float d) noexcept : Value(static_cast<double>(d)) {}
 	Value(const char *s) noexcept : Value(string_view(s)) {}
 	
 	Value& operator=(const Value &v) {
@@ -193,12 +193,12 @@ public:
 		value_type = value_type_t::number_int64;
 		return *this;
 	}
-	Value& operator=(int8_t i) noexcept { return *this = (int64_t)i; }
-	Value& operator=(uint8_t i) noexcept { return *this = (int64_t)i; }
-	Value& operator=(int16_t i) noexcept { return *this = (int64_t)i; }
-	Value& operator=(uint16_t i) noexcept { return *this = (int64_t)i; }
-	Value& operator=(int32_t i) noexcept { return *this = (int64_t)i; }
-	Value& operator=(uint32_t i) noexcept { return *this = (int64_t)i; }
+	Value& operator=(int8_t i) noexcept { return *this = static_cast<int64_t>(i); }
+	Value& operator=(uint8_t i) noexcept { return *this = static_cast<int64_t>(i); }
+	Value& operator=(int16_t i) noexcept { return *this = static_cast<int64_t>(i); }
+	Value& operator=(uint16_t i) noexcept { return *this = static_cast<int64_t>(i); }
+	Value& operator=(int32_t i) noexcept { return *this = static_cast<int64_t>(i); }
+	Value& operator=(uint32_t i) noexcept { return *this = static_cast<int64_t>(i); }
 	Value& operator=(double d) noexcept {
 		clear();
 		u.number_doublevalue = d;
