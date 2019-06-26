@@ -3,46 +3,62 @@ ARCH=$(shell uname -m)
 
 CXXFLAGS:=-g -std=c++11
 CXXFLAGS += -MMD -MP
-CXXFLAGS += -Wall -Wvla
-CXXFLAGS += -Wshift-negative-value
-CPPFLAGS += -Wodr
-CPPFLAGS += -Wswitch-bool
-CPPFLAGS += -Wlogical-not-parentheses
-CPPFLAGS += -Wsizeof-array-argument
-CPPFLAGS += -Wstrict-aliasing=1
 
 #compiler warning setup
 ifeq ($(findstring clang++, $(CXX)),clang++)
-CPPFLAGS += -Weverything
-CPPFLAGS += -Wno-c++98-compat-pedantic
-CPPFLAGS += -Wno-global-constructors
-CPPFLAGS += -Wno-exit-time-destructors
-CPPFLAGS += -Wno-padded
-CPPFLAGS += -Wno-weak-vtables
-CPPFLAGS += -Wno-disabled-macro-expansion
-CPPFLAGS += -Wno-undefined-reinterpret-cast #we know what we're doing in Endianess.cc
-CPPFLAGS += -Wno-sign-conversion
+CXXFLAGS += -Wall -Wvla
+CXXFLAGS += -Wshift-negative-value
+CXXFLAGS += -Wodr
+CXXFLAGS += -Wswitch-bool
+CXXFLAGS += -Wlogical-not-parentheses
+CXXFLAGS += -Wsizeof-array-argument
+CXXFLAGS += -Wstrict-aliasing=1
+CXXFLAGS += -Weverything
+CXXFLAGS += -Wno-c++98-compat-pedantic
+CXXFLAGS += -Wno-global-constructors
+CXXFLAGS += -Wno-exit-time-destructors
+CXXFLAGS += -Wno-padded
+CXXFLAGS += -Wno-weak-vtables
+CXXFLAGS += -Wno-disabled-macro-expansion
+CXXFLAGS += -Wno-undefined-reinterpret-cast #we know what we're doing in Endianess.cc
+CXXFLAGS += -Wno-sign-conversion
 CXXFLAGS += -Wno-unknown-pragmas
 CXXFLAGS += -Wno-old-style-cast
 CXXFLAGS += -Wno-float-equal
 else ifeq ($(findstring g++, $(CXX)),g++)
+CXXFLAGS += -Wall -Wvla
+CXXFLAGS += -Wshift-negative-value
+CXXFLAGS += -Wodr
+CXXFLAGS += -Wswitch-bool
+CXXFLAGS += -Wlogical-not-parentheses
+CXXFLAGS += -Wsizeof-array-argument
+CXXFLAGS += -Wstrict-aliasing=1
 CXXFLAGS += -Wextra
 CXXFLAGS += -Wno-unknown-pragmas
 CXXFLAGS += -Wduplicated-branches
 CXXFLAGS += -Wshift-overflow=2
 CXXFLAGS += -Wduplicated-cond
-CPPFLAGS += -Wbool-compare
-CPPFLAGS += -Wunused
+CXXFLAGS += -Wbool-compare
+CXXFLAGS += -Wunused
+else ifeq ($(findstring icc, $(CXX)),icc)
+CXXFLAGS += -Wall -Wvla
+CXXFLAGS += -Wstrict-aliasing=1
+CXXFLAGS += -Wextra
+CXXFLAGS += -Wno-unknown-pragmas
+CXXFLAGS += -Wunused
+CXXFLAGS += -wd2102  #violation of ansi-alias rules  (happens in std::vector<>)
+CXXFLAGS += -wd11074 -wd11076 #Inlining inhibited by...
 endif
 
 #compiler optimization setup
 ifeq ($(config),release)
-CXXFLAGS += -march=native -mtune=generic -O3
+CXXFLAGS += -march=native -mtune=native -O3
 ifeq ($(ARCH),x86_64)
-#most -march=native doesnt enable SSE 4.2
-CXXFLAGS += -msse4.2
+#nothing special
+else ifeq ($(ARCH),armv7l)
+#nothing special
 endif
-CPPFLAGS += -fstrict-aliasing
+CXXFLAGS += -fstrict-aliasing
 endif
 
 
