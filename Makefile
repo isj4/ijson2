@@ -26,6 +26,7 @@ CXXFLAGS += -Wno-unknown-pragmas
 CXXFLAGS += -Wno-old-style-cast
 CXXFLAGS += -Wno-float-equal
 else ifeq ($(findstring g++, $(CXX)),g++)
+GCC_MAJOR_VERSION:= $(shell gcc -dumpversion |cut -d. -f1)
 CXXFLAGS += -Wall -Wvla
 CXXFLAGS += -Wshift-negative-value
 CXXFLAGS += -Wodr
@@ -35,11 +36,19 @@ CXXFLAGS += -Wsizeof-array-argument
 CXXFLAGS += -Wstrict-aliasing=1
 CXXFLAGS += -Wextra
 CXXFLAGS += -Wno-unknown-pragmas
-CXXFLAGS += -Wduplicated-branches
 CXXFLAGS += -Wshift-overflow=2
 CXXFLAGS += -Wduplicated-cond
 CXXFLAGS += -Wbool-compare
 CXXFLAGS += -Wunused
+ifeq ($(GCC_MAJOR_VERSION),6)
+ifeq ($(ARCH),armv7l)
+CXXFLAGS += -Wno-psabi
+endif
+else ifeq ($(GCC_MAJOR_VERSION),7)
+CXXFLAGS += -Wduplicated-branches
+else ifeq ($(GCC_MAJOR_VERSION),8)
+CXXFLAGS += -Wduplicated-branches
+endif
 else ifeq ($(findstring icc, $(CXX)),icc)
 CXXFLAGS += -Wall -Wvla
 CXXFLAGS += -Wstrict-aliasing=1
