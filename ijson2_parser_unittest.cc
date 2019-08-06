@@ -328,6 +328,16 @@ int main() {
 		}
 	}
 	
+	printf("Parsing large integers\n");
+	{
+		TestParser p;
+		p.parse("{\"start\": 1565115093136, \"end\": 1565115113136, \"queries\": [{\"aggregator\": \"avg\", \"metric\": \"temperature\"}]}");
+		assert(p.value().value_type==value_type_t::object);
+		assert(p.value().u.object_members.size()==3);
+		assert(p.value().u.object_members.at("start").value_type==value_type_t::number_int64);
+		assert(p.value().u.object_members.at("end").value_type==value_type_t::number_int64);
+	}
+	
 	printf("Parsing arrays (complex)\n");
 	{
 		TestParser p;

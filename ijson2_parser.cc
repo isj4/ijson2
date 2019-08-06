@@ -294,10 +294,10 @@ const char *ijson2::Parser::parse_number_value(const char *s, const char *end, V
 	} else {
 		char *endptr=nullptr;
 		errno = 0;
-		long l = strtol(copy.c_str(),&endptr,10);
+		long long l = strtoll(copy.c_str(),&endptr,10);
 		if(endptr && *endptr)
 			throw unparseable_number(s);
-		if((l==LONG_MAX || l==LONG_MIN) && errno==ERANGE)
+		if((l==LLONG_MAX || l==LLONG_MIN) && errno==ERANGE)
 			throw unparseable_number(s);
 		value->value_type = value_type_t::number_int64;
 		value->u.number_int64value = l;
