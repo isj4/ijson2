@@ -17,7 +17,7 @@ class DirectFormatter {
 	bool nl_indent_pending = false;
 	bool suppress_indent = false;
 	void append(const char *s, size_t l);
-	void append_indent(int level);
+	void append_indent(int indents);
 	void append_string(const string_view &sv, bool raw);
 public:
 	DirectFormatter(append_fn_t append_pfn_, void *append_context_, bool pretty_=false)

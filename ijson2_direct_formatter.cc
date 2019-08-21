@@ -21,12 +21,12 @@ void ijson2::DirectFormatter::append(const char *s, size_t l) {
 }
 
 
-void ijson2::DirectFormatter::append_indent(int level) {
+void ijson2::DirectFormatter::append_indent(int indents) {
 	//yes, we use tabs. 
-	while(level>0) {
+	while(indents>0) {
 		static const char eight_tabs[8]={'\t','\t','\t','\t','\t','\t','\t','\t'};
-		append(eight_tabs, level%8);
-		level -= 8;
+		append(eight_tabs, indents%8);
+		indents -= 8;
 	}
 }
 
